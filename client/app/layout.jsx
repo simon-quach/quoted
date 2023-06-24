@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.className} text-[#1e1e1e] flex justify-center bg-[#1e1e1e]`}
       >
-        <div className="w-[500px]">
+        <div className="max-w-[500px]">
           <Navbar />
           {children}
         </div>
