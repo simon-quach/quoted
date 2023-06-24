@@ -15,8 +15,7 @@ import { auth } from "@/firebase";
 const QuoteContainer = () => {
   const router = useRouter();
   const [quotes, setQuotes] = useState([]);
-  const [user, setUser] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [profileImages, setProfileImages] = useState({});
 
   useEffect(() => {
     const fetchQuotes = async () => {
@@ -28,28 +27,35 @@ const QuoteContainer = () => {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const storage = getStorage();
-        const storageRef = ref(storage, `images/${currentUser.uid}`);
-        getDownloadURL(storageRef)
-          .then((url) => {
-            // The image URL is available here.
-            setImageUrl(url);
-          })
-          .catch((error) => {
-            console.error("Error getting image URL: ", error);
-          });
-      } else {
-        setUser(null);
-        setImageUrl(null);
-      }
-    });
+    const fetchProfileImages = async () => {
+      const images = {};
 
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, [auth]);
+      for (const quote of quotes) {
+        try {
+          const url = await getProfileImage(quote.uid);
+          images[quote.uid] = url;
+        } catch (error) {
+          images[quote.uid] = DefaultProfile; // Default image in case of error
+        }
+      }
+
+      setProfileImages(images);
+    };
+
+    fetchProfileImages();
+  }, [quotes]);
+
+  const getProfileImage = async (uid) => {
+    try {
+      const storage = getStorage();
+      const storageRef = ref(storage, `images/${uid}`);
+      const url = await getDownloadURL(storageRef);
+      return url;
+    } catch (error) {
+      console.error("Error getting image URL: ", error);
+      return null;
+    }
+  };
 
   return (
     <div>
@@ -75,17 +81,17 @@ const QuoteContainer = () => {
               <Image src={Edit} alt="edit" />
             </div>
           )}
-          {user && (
-            <div>
-              {imageUrl ? (
-                <div className="rounded-full overflow-hidden absolute right-[24px] top-[24px]">
-                  <img src={imageUrl} alt="user-profile" className="w-[32px]" />
-                </div>
-              ) : (
-                <Image src={DefaultProfile} alt="default-profile" width={32} />
-              )}
-            </div>
-          )}
+          <div>
+            {quote.uid && (
+              <div className="rounded-full overflow-hidden absolute right-[24px] top-[24px]">
+                <img
+                  src={profileImages[quote.uid] || DefaultProfile}
+                  alt="user-profile"
+                  className="w-[32px]"
+                />
+              </div>
+            )}
+          </div>
         </div>
       ))}
     </div>
