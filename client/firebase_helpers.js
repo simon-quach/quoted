@@ -1,8 +1,9 @@
 import {
   doc,
-  setDoc,
+  addDoc,
   deleteDoc,
   updateDoc,
+  getDoc,
   getDocs,
   collection,
 } from "firebase/firestore";
@@ -10,36 +11,38 @@ import {
 import { db, auth } from "@/firebase";
 
 // DATABASE HELPERS
-export async function addQuote(quote) {
-  const quotesRef = doc(db, "users", auth.uid, "quotes");
-
+export async function addQuote(quote, author) {
+  const quotesRef = collection(db, "quotes");
   const quoteDoc = {
     quote: quote,
-    createdAt: new Date(),
+    author: author,
+    timestamp: new Date().toLocaleString(),
+    uid: auth.currentUser.uid,
   };
 
-  await setDoc(collection(quotesRef), quoteDoc);
+  await addDoc(quotesRef, quoteDoc); // Use addDoc to add a new document to a collection
 }
 
 export async function deleteQuote(quoteId) {
-  const quoteRef = doc(db, "users", auth.uid, "quotes", quoteId);
+  const quoteRef = doc(db, "quotes", quoteId); // Use doc to get a reference to a specific document
 
   await deleteDoc(quoteRef);
 }
 
-export async function updateQuote(quoteId, newQuote) {
-  const quoteRef = doc(db, "users", auth.uid, "quotes", quoteId);
+export async function updateQuote(quoteId, newQuote, newAuthor) {
+  const quoteRef = doc(db, "quotes", quoteId); // Use doc to get a reference to a specific document
 
   const updatedQuote = {
     quote: newQuote,
-    updatedAt: new Date(),
+    author: newAuthor,
+    timestamp: new Date().toLocaleString(),
   };
 
   await updateDoc(quoteRef, updatedQuote);
 }
 
 export async function getAllQuotes() {
-  const quotesRef = collection(db, "users", auth.uid, "quotes");
+  const quotesRef = collection(db, "quotes"); // Use collection to get a reference to a collection
 
   const querySnapshot = await getDocs(quotesRef);
   const quotes = [];
@@ -48,4 +51,16 @@ export async function getAllQuotes() {
   });
 
   return quotes;
+}
+
+export async function getQuote(quoteId) {
+  const quoteRef = doc(db, "quotes", quoteId);
+  const quoteSnapshot = await getDoc(quoteRef);
+
+  if (quoteSnapshot.exists()) {
+    const quoteData = quoteSnapshot.data();
+    return { id: quoteSnapshot.id, ...quoteData };
+  } else {
+    throw new Error("Document does not exist.");
+  }
 }

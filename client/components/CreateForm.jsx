@@ -1,9 +1,16 @@
 "use client";
 
+import { addQuote } from "@/firebase_helpers";
+
+import { useRouter } from "next/navigation";
+
 const CreateForm = () => {
+  const router = useRouter();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Uploaded Quote");
+    addQuote(e.target.quote.value, e.target.author.value);
+    router.push("/");
   };
 
   return (

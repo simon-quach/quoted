@@ -40,7 +40,7 @@ const Navbar = () => {
   }, [auth]);
 
   return (
-    <nav className="h-[64px] flex justify-between items-center p-[2rem] border-b-[1px] border-[#E6E6E6]">
+    <nav className="h-[64px] flex justify-between items-center p-[2rem] border-b-[1px] border-[#E6E6E6] bg-[#ffffff]">
       <Link href="/">
         <div className="text-[20px] bg-gradient-to-r from-[#5B53FF] to-[#A35BFF] bg-clip-text text-transparent font-bold">
           quoted.
