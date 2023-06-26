@@ -14,6 +14,10 @@ const LogInForm = () => {
   const [password, setPassword] = useState("");
 
   const login = async (email, password) => {
+    if (!email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -24,6 +28,7 @@ const LogInForm = () => {
       console.log("User logged in:", user);
       router.push("/");
     } catch (error) {
+      alert("Invalid email or password");
       console.error("Error logging in user:", error);
     }
   };

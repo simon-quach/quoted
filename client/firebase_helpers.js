@@ -6,6 +6,8 @@ import {
   getDoc,
   getDocs,
   collection,
+  query,
+  orderBy,
 } from "firebase/firestore";
 
 import { db, auth } from "@/firebase";
@@ -42,9 +44,10 @@ export async function updateQuote(quoteId, newQuote, newAuthor) {
 }
 
 export async function getAllQuotes() {
-  const quotesRef = collection(db, "quotes"); // Use collection to get a reference to a collection
+  const quotesRef = collection(db, "quotes");
+  const orderedQuotesQuery = query(quotesRef, orderBy("timestamp", "desc")); // order by timestamp in descending order
 
-  const querySnapshot = await getDocs(quotesRef);
+  const querySnapshot = await getDocs(orderedQuotesQuery);
   const quotes = [];
   querySnapshot.forEach((doc) => {
     quotes.push({ id: doc.id, ...doc.data() });

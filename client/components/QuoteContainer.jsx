@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 import { getAllQuotes } from "@/firebase_helpers";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
-import { onAuthStateChanged } from "firebase/auth";
 
 import Edit from "@/assets/edit.svg";
 import DefaultProfile from "@/assets/default-profile.svg";
@@ -64,14 +63,16 @@ const QuoteContainer = () => {
           key={quote.id}
           className="bg-[#FFFFFF] rounded-[16px] p-[24px] mt-[24px] drop-shadow-sm"
         >
-          <div className="text-[16px] text-[#1e1e1e] font-bold">
-            {quote.quote}
-          </div>
-          <div className="text-[16px] text-[#1e1e1e] font-semibold mt-[8px]">
-            - {quote.author}
-          </div>
-          <div className="text-[16px] text-[#656565] font-medium mt-[8px]">
-            {quote.timestamp}
+          <div className="mr-[40px]">
+            <div className="text-[16px] text-[#1e1e1e] font-bold">
+              {quote.quote}
+            </div>
+            <div className="text-[16px] text-[#1e1e1e] font-semibold mt-[8px]">
+              - {quote.author}
+            </div>
+            <div className="text-[16px] text-[#656565] font-medium mt-[8px]">
+              {quote.timestamp}
+            </div>
           </div>
           {auth.currentUser && quote.uid === auth.currentUser.uid && (
             <div
@@ -84,11 +85,19 @@ const QuoteContainer = () => {
           <div>
             {quote.uid && (
               <div className="rounded-full overflow-hidden absolute right-[24px] top-[24px]">
-                <img
-                  src={profileImages[quote.uid] || DefaultProfile}
-                  alt="user-profile"
-                  className="w-[32px]"
-                />
+                {profileImages[quote.uid] ? (
+                  <img
+                    src={profileImages[quote.uid]}
+                    alt="user-profile"
+                    className="w-[32px]"
+                  />
+                ) : (
+                  <Image
+                    src={DefaultProfile}
+                    alt="user-profile"
+                    className="w-[32px]"
+                  />
+                )}
               </div>
             )}
           </div>

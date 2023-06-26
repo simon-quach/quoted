@@ -14,6 +14,10 @@ const SignUpForm = () => {
   const [password, setPassword] = useState("");
 
   const register = async (email, password) => {
+    if (!email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,

@@ -49,6 +49,10 @@ const page = () => {
   };
 
   const handleUpload = () => {
+    if (!image) {
+      console.log("No image selected");
+      return;
+    }
     const storage = getStorage();
     const storageRef = ref(storage, `images/${user.uid}`);
     const uploadTask = uploadBytesResumable(storageRef, image);
@@ -73,6 +77,7 @@ const page = () => {
             .then(() => {
               setImageUrl(downloadURL);
               console.log("Updated profile picture");
+              location.reload();
             })
             .catch((error) => {
               console.error("Error updating profile picture: ", error);
@@ -102,12 +107,12 @@ const page = () => {
           <div className="mt-[4px]">
             <input type="file" onChange={handleChange} />
 
-            <div
+            <button
               onClick={handleUpload}
-              className="font-bold underline text-[16px] text-[#656565] cursor-pointer"
+              className="bg-gradient-to-r from-[#5B53FF] to-[#A35BFF] text-white text-[16px] font-bold py-[8px] px-[16px] rounded-[16px] w-[70%] flex justify-center items-center mt-[24px]"
             >
               Change profile picture
-            </div>
+            </button>
           </div>
         </div>
       </div>
